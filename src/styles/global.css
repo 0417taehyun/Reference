@@ -228,8 +228,10 @@ html.js .book > .page { position: absolute; width: var(--page-width); height: va
   margin-top: clamp(1rem, 2.5vw, 2rem);
   scrollbar-width: thin;
   scrollbar-color: var(--rule) transparent;
-  mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent);
   padding-bottom: 1.5rem;
+}
+.page-body[data-scroll-more] {
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent);
 }
 /* Keep margin notes and circles inside the native scrolling viewport. */
 .page--body .page-body {
@@ -237,8 +239,39 @@ html.js .book > .page { position: absolute; width: var(--page-width); height: va
   padding-inline: 20px;
 }
 .page-foot {
+  position: relative;
   margin-top: 0.75rem;
 }
+.page-scroll-hint {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  min-width: 44px;
+  min-height: 44px;
+  padding: .25rem .5rem;
+  border: 0;
+  background: transparent;
+  color: #765a34;
+  font-size: .6875rem;
+  line-height: 1.4;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.page-scroll-hint:hover { color: var(--ink); }
+.page-scroll-hint svg { width: 17px; height: 25px; flex: none; overflow: visible; }
+.page-scroll-hint path { stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; }
+.page-scroll-hint[data-scroll-draw] path { animation: scroll-hint-draw .65s .2s ease-out both; }
+.book-host[data-turning] .page-scroll-hint { visibility: hidden; }
+:root[data-motion="off"] .page-scroll-hint path { animation: none; }
+@keyframes scroll-hint-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 
 .prose {
   font-size: clamp(0.9375rem, 0.55rem + 0.55vw, 1.0625rem);
@@ -369,7 +402,7 @@ html:not(.js) .sound-toggle {
     break-before: auto;
     margin-top: 1.5rem;
   }
-  .page-body {
+  .page-body, .page-body[data-scroll-more] {
     overflow: visible;
     mask-image: none;
     padding-bottom: 0;
@@ -395,5 +428,5 @@ html:not(.js) .sound-toggle {
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0s !important; }
-  .corner-guide-arrow { animation: none; }
+  .corner-guide-arrow, .page-scroll-hint path { animation: none; }
 }

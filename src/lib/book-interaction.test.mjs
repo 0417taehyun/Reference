@@ -40,4 +40,11 @@ describe('page gesture decisions', () => {
         expect(controller.drag).toBeNull();
         expect(controller.settle).toHaveBeenCalledWith(false);
     });
+    it('preserves native reading shortcuts when focus is inside a page', () => {
+        const controller = Object.create(BookController.prototype);
+        const preventDefault = vi.fn();
+        const target = { closest: selector => selector === '.page-body' ? {} : null };
+        ['PageDown', 'PageUp', 'Home', 'End'].forEach(key => controller.handleKey({ key, target, preventDefault }));
+        expect(preventDefault).not.toHaveBeenCalled();
+    });
 });

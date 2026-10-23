@@ -1,6 +1,7 @@
 import { bookViews, paperCurve, paperCurl, paperPanelMatrix } from '../lib/book-geometry.mjs';
 import { createBookAudio } from './book-audio';
 import { createAnnotations } from './book-annotations';
+import { BookScrollHints } from './book-scroll';
 import { clamp, swipeIntent, shouldCompleteTurn, settleDuration, turnThreshold } from '../lib/book-interaction.mjs';
 import { readSession, writeSession } from '../lib/session';
 import { syncToggleButtons } from '../lib/book-dom';
@@ -22,6 +23,7 @@ export class BookController {
     motionEnabled: boolean;
     audio: ReturnType<typeof createBookAudio>;
     ink: ReturnType<typeof createAnnotations>;
+    scrollHints: BookScrollHints;
     counter: HTMLElement | null;
     guide: HTMLElement | null;
     guideCompleted = readSession('book-corner-guide-v1') === 'done';
@@ -62,6 +64,7 @@ export class BookController {
         if (this.guide)
             this.frame.append(this.guide);
         this.host.append(this.frame);
+        this.scrollHints = new BookScrollHints(this.host, this.pages, () => this.motionEnabled && !this.reducedMotionMediaQuery.matches);
         this.leftCorner = this.corner(-1);
         this.rightCorner = this.corner(1);
         this.profiles = this.pages.flatMap((page, index) => page.dataset.page === 'profile' ? [index] : []);
@@ -212,6 +215,8 @@ export class BookController {
     handleKey(event: KeyboardEvent) {
         if (event.defaultPrevented || event.altKey || event.metaKey || event.ctrlKey || (event.target as Element)?.closest('input,textarea,select,[contenteditable="true"]'))
             return;
+        if (['PageDown', 'PageUp', 'Home', 'End'].includes(event.key) && (event.target as Element)?.closest('.page-body'))
+            return;
         const targets: Record<string, number | undefined> = {
             ArrowRight: this.views[this.view + 1]?.[0], PageDown: this.views[this.view + 1]?.[0],
             ArrowLeft: this.views[this.view - 1]?.[0], PageUp: this.views[this.view - 1]?.[0], Home: 0, End: this.pages.length - 1,
@@ -304,6 +309,7 @@ export class BookController {
         delete this.host.dataset.turnProgress;
         this.updateControls();
         this.updateGuide();
+        this.scrollHints.show();
         if (updateInk)
             this.ink.show(this.views[this.view].map(index => this.pages[index]), animateInk);
     }

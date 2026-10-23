@@ -41,6 +41,8 @@ export const interfaceText = {
         email: 'Email',
         updated: 'Last updated',
         navHint: 'Swipe left or right on a touch screen, or pull a top corner with your mouse. Scroll vertically to keep reading. Arrow keys also work.',
+        scrollMore: 'Scroll to read more',
+        scrollRegion: 'Page content',
     },
     ko: {
         htmlLang: 'ko',
@@ -81,6 +83,8 @@ export const interfaceText = {
         email: '이메일',
         updated: '마지막 업데이트',
         navHint: '터치에서는 좌우로 쓸어 넘기고, 마우스는 위 모서리를 끌어 보세요. 긴 본문은 아래로 스크롤해 읽을 수 있습니다. 키보드 방향키도 지원합니다.',
+        scrollMore: '아래로 계속 읽기',
+        scrollRegion: '페이지 내용',
     },
 } satisfies Record<Language, Record<string, unknown>>;
 /**
