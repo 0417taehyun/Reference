@@ -1,0 +1,399 @@
+@import "tailwindcss";
+
+/* ---------- Tokens ---------- */
+:root {
+  --bg: #e6dbc8;
+  --page: #f5eddd;
+  --ink: #342c24;
+  --ink-2: #625647;
+  --muted: #82725e;
+  --rule: #d9ccb7;
+  --mark: rgba(179, 139, 65, 0.2);
+  --mark-flash: rgba(179, 139, 65, 0.35);
+  --shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.08);
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-page: var(--page);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-rule: var(--rule);
+  --font-sans: "Pretendard Variable", Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* ---------- Base ---------- */
+html {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overscroll-behavior: none;
+}
+body {
+  background: var(--bg);
+  /* A definite height so the stage (flex: 1) and the book inside it can size to it. */
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+html:not(.js) body {
+  height: auto;
+  min-height: 100dvh;
+  overflow: visible;
+}
+::selection {
+  background: var(--mark);
+}
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* ---------- Highlights ---------- */
+mark {
+  background: transparent;
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: #435d6b;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+  scroll-margin-top: 2rem;
+}
+mark.is-flash {
+  background: var(--mark-flash);
+  border-radius: 2px;
+}
+.prose { position: relative; }
+.annotation-ready mark { text-decoration: none; }
+.ink-layer { position: absolute; inset: 0; overflow: visible; pointer-events: none; }
+.ink-layer path { fill: none; stroke: #45606d; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 0; }
+.ink-layer [data-ink="circle"] { stroke: #a35d48; stroke-width: 1.55; }
+.ink-layer [data-ink="star"] { stroke: #a35d48; stroke-width: 1.7; }
+
+/* ---------- Stage & book host ---------- */
+.book-stage {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  padding: 0.75rem 1rem max(1.5rem, env(safe-area-inset-bottom, 0px));
+  overflow: hidden;
+}
+.book-host {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+/* The resting pages remain native, selectable HTML. */
+.book {
+  position: absolute;
+}
+html.js .book-host:not([data-ready]) [data-page] { visibility: hidden; }
+html.js .book > .page { position: absolute; width: var(--page-width); height: var(--page-height); top: 0; }
+.book-host[data-mode="mobile"] .book,
+.book-host[data-mode="mobile"] .page-body { touch-action: pan-y pinch-zoom; }
+.book-host[data-turning] .prose:not(.annotation-ready) mark { text-decoration: none; }
+.book > .page:not([hidden]) {
+  box-shadow: 1px 1px 0 #ded0b6, 2px 2px 0 #f0e4cd, 3px 3px 0 #d3c1a3, 4px 4px 0 #eee0c7, 5px 5px 0 #caba9b, var(--shadow);
+}
+.page-corner {
+  position: absolute;
+  top: 0;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  cursor: grab;
+  touch-action: none;
+  z-index: 40;
+  -webkit-tap-highlight-color: transparent;
+}
+.page-corner::before,
+.page-corner::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  pointer-events: none;
+}
+/* The missing tip reveals the desk; its reverse folds back onto the page. */
+.page-corner::before {
+  background: var(--bg);
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+}
+.page-corner::after {
+  background: linear-gradient(45deg, #e4d3b4 2%, #f8f0de 28%, #ebdabc 43%, #b8a07c 49.5%, transparent 50.5%);
+  border-bottom-left-radius: 3px;
+  filter: drop-shadow(-2px 3px 2px #715a3c55);
+}
+.page-corner--left::before,
+.page-corner--left::after { right: auto; left: 0; transform: scaleX(-1); }
+@media (max-width: 32rem) {
+  .page-head { padding-inline: 14px; }
+}
+.book-host[data-turning] .page-corner { opacity: 0; cursor: grabbing; }
+.corner-guide { position: absolute; top: 64px; z-index: 30; width: min(220px, calc(var(--page-width) - 40px)); transform: translateX(-100%); border: 1px solid #c5ac7e; border-radius: 4px; padding: .875rem; background: #fbf4e5; color: var(--ink); font-size: .75rem; line-height: 1.6; box-shadow: 0 8px 24px #261a1326; pointer-events: none; }
+.corner-guide[data-side="left"] { transform: none; }
+.corner-guide-arrow { position: absolute; top: -50px; right: -8px; width: 54px; height: 48px; color: #d9b976; filter: drop-shadow(0 1px 1px #261a1355); animation: corner-guide-point 1.6s ease-in-out 3; }
+.corner-guide[data-side="left"] .corner-guide-arrow { right: auto; left: -8px; scale: -1 1; }
+@keyframes corner-guide-point { 50% { translate: 4px -4px; } }
+:root[data-motion="off"] .corner-guide-arrow { animation: none; }
+.paper-turn { position: absolute; left: var(--page-width); top: 0; width: var(--page-width); height: 100%; pointer-events: none; z-index: 20; }
+.paper-turn--mobile { clip-path: inset(-10% 0); }
+.paper-panel { position: absolute; top: 0; left: 0; height: 100%; transform-origin: 0 0; will-change: transform; }
+.paper-face {
+  position: absolute; inset: 0; overflow: hidden; isolation: isolate;
+  background: linear-gradient(to right,
+    color-mix(in srgb, #503b22 calc(var(--shade-left, .035) * 100%), var(--face-base, var(--page))),
+    color-mix(in srgb, #503b22 calc(var(--shade-right, .035) * 100%), var(--face-base, var(--page))));
+}
+.paper-face--back {
+  transform: scaleX(-1);
+  background: linear-gradient(to left,
+    color-mix(in srgb, #503b22 calc(var(--shade-left, .035) * 100%), var(--face-base, var(--page))),
+    color-mix(in srgb, #503b22 calc(var(--shade-right, .035) * 100%), var(--face-base, var(--page))));
+}
+.page.page-clone { position: absolute; display: block; visibility: visible; box-shadow: none; background: transparent; }
+.page.page-clone::before { display: none; }
+.turn-shadow { position: absolute; top: 0; height: 100%; background: #302114; transform: translateZ(.5px); pointer-events: none; z-index: 5; }
+.sound-credits { margin-top: 1.25rem; border-top: 1px solid #c5ac7e55; padding-top: .75rem; color: #d9c3a1; font-size: .625rem; line-height: 1.6; }
+.sound-credits a { text-decoration: underline; text-underline-offset: 2px; }
+.sound-toggle, .motion-toggle { min-width: 36px; justify-content: center; }
+.sound-muted, .motion-play { display: none; }
+:root[data-sound="off"] .sound-muted,
+:root[data-motion="off"] .motion-play { display: block; }
+:root[data-sound="off"] .sound-waves,
+:root[data-motion="off"] .motion-pause { display: none; }
+
+/* ---------- Pages ---------- */
+/* Quiet paper grain and a crease at the binding; the reading area stays clean. */
+.page {
+  position: relative;
+  height: 100%;
+  background: var(--page) url("/paper-grain.svg");
+  color: var(--ink);
+  padding: clamp(1.25rem, 3.5vw, 2.75rem);
+  border: 1px solid var(--rule);
+  user-select: text;
+  -webkit-user-select: text;
+}
+.page-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+.page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to right, rgb(0 0 0 / 0.08), transparent 5%, transparent 98%, rgb(0 0 0 / 0.04));
+}
+.page[data-side="left"]::before {
+  transform: scaleX(-1);
+}
+.page--cover,
+.page--back {
+  background-color: #503d2d;
+  color: #f5e7c9;
+  border-color: #6c5238;
+  box-shadow: inset 5px 0 12px #261a1355;
+}
+.page--cover::after, .page--back::after { content: ""; position: absolute; inset: 10px; border: 1px solid #c4a66d55; pointer-events: none; }
+.page-head,
+.page-foot {
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+.page-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin-top: clamp(1rem, 2.5vw, 2rem);
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule) transparent;
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent);
+  padding-bottom: 1.5rem;
+}
+/* Keep margin notes and circles inside the native scrolling viewport. */
+.page--body .page-body {
+  margin-inline: -20px;
+  padding-inline: 20px;
+}
+.page-foot {
+  margin-top: 0.75rem;
+}
+
+.prose {
+  font-size: clamp(0.9375rem, 0.55rem + 0.55vw, 1.0625rem);
+  line-height: 1.78;
+  color: var(--ink);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  letter-spacing: -0.005em;
+}
+.prose p + p {
+  margin-top: 1em;
+}
+.prose a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---------- No-JS fallback: a plain stack of pages ---------- */
+html:not(.js) .book-stage {
+  overflow: visible;
+  height: auto;
+}
+html:not(.js) .book-host {
+  height: auto;
+  width: min(100%, 44rem);
+  margin: 0 auto;
+  display: grid;
+  gap: 1rem;
+}
+html:not(.js) .page {
+  position: relative;
+  height: auto;
+  min-height: 24rem;
+  user-select: text;
+}
+html:not(.js) .page-body {
+  overflow: visible;
+  mask-image: none;
+}
+html:not(.js) .reader-profile { display: none; }
+html:not(.js) .motion-toggle,
+html:not(.js) .sound-toggle {
+  display: none;
+}
+
+/* ---------- Print: every page in order, profile and body together ---------- */
+/* Tailwind's hidden rule is important inside its base layer. */
+@layer base {
+  @media print { [data-page][hidden] { display: block !important; } }
+}
+@media print {
+  :root {
+    --bg: #fff;
+    --page: #fff;
+    --ink: #111;
+    --ink-2: #333;
+    --muted: #666;
+    --rule: #ccc;
+    --mark: #fff27a;
+    --shadow: none;
+    color-scheme: light;
+  }
+  @page {
+    margin: 16mm;
+  }
+  body {
+    height: auto;
+    overflow: visible;
+    display: block;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .book-stage {
+    height: auto;
+    overflow: visible;
+    padding: 0;
+  }
+  .book-host,
+  .book {
+    position: static !important;
+    height: auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    transform: none !important;
+    perspective: none !important;
+    transition: none !important;
+  }
+  [data-page] {
+    display: block !important;
+    position: static !important;
+    transform: none !important;
+    clip-path: none !important;
+    -webkit-clip-path: none !important;
+    width: auto !important;
+    height: auto !important;
+    visibility: visible !important;
+    box-shadow: none !important;
+  }
+  .paper-turn, .turn-shadow, .ink-layer, .reader-profile { display: none !important; }
+  .annotation-ready mark { text-decoration: underline; }
+  .page {
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    break-before: page;
+    break-inside: avoid-page;
+    user-select: text;
+  }
+  .page::before, .page::after {
+    display: none;
+  }
+  .page--cover,
+  .page--back {
+    background: #fff;
+    color: #111;
+  }
+  .page--cover *,
+  .page--back * {
+    color: #111 !important;
+    border-color: #ccc !important;
+  }
+  .page--cover {
+    break-before: auto;
+  }
+  .page--body {
+    break-before: auto;
+    margin-top: 1.5rem;
+  }
+  .page-body {
+    overflow: visible;
+    mask-image: none;
+    padding-bottom: 0;
+  }
+  .page[inert] {
+    pointer-events: auto;
+  }
+  .prose {
+    font-size: 11pt;
+    line-height: 1.6;
+  }
+  mark {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: var(--muted);
+    word-break: break-all;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0s !important; }
+  .corner-guide-arrow { animation: none; }
+}

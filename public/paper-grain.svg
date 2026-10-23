@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180">
+  <filter id="grain" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency=".72" numOctaves="3" stitchTiles="stitch" seed="17"/>
+    <feColorMatrix type="saturate" values="0"/>
+  </filter>
+  <path fill="#8c7959" opacity=".06" filter="url(#grain)" d="M0 0h180v180H0z"/>
+  <g stroke="#947d56" stroke-width=".45" opacity=".06">
+    <path d="m8 23 12-2m49 51 9 1m51-33 8-2M20 149l15 1m75-12 8-3M142 93l13 2M42 109l9-1M94 11l9 2"/>
+  </g>
+</svg>

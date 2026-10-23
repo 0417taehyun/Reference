@@ -1,0 +1,85 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { interfaceText, type Language } from '../i18n/ui';
+
+interface Props {
+  language: Language;
+  entry: CollectionEntry<'references'>;
+  index: number;
+  total: number;
+}
+const { language, entry, index, total } = Astro.props;
+const text = interfaceText[language];
+const referenceData = entry.data;
+const referenceNumber = String(index).padStart(2, '0');
+---
+
+<section
+  class="page page--profile"
+  data-page="profile"
+  data-ref={referenceData.refId}
+  id={`ref-${referenceData.refId}-profile`}
+  aria-label={text.referenceLabel(index, total)}
+>
+<div class="page-inner">
+  <div class="page-head">
+    <span>{text.referenceLabel(index, total)}</span>
+  </div>
+
+  <div class="page-body">
+    <div>
+      <p class="text-[clamp(3rem,7vw,5.5rem)] leading-none font-light tracking-tighter text-ink/90 tabular-nums" aria-hidden="true">
+        {referenceNumber}
+      </p>
+      <img
+        src={referenceData.photo}
+        alt=""
+        width="160"
+        height="160"
+        loading={index === 1 ? 'eager' : 'lazy'}
+        decoding="async"
+        referrerpolicy="no-referrer"
+        class="profile-photo mt-8 size-20 rounded-xl object-cover lg:size-24"
+      />
+      <div class="min-w-0">
+        <h2 id={`ref-${referenceData.refId}-name`} class="profile-name mt-5 text-2xl font-semibold tracking-tight text-ink">
+          {referenceData.name}
+        </h2>
+        <p class="profile-meta mt-1 text-sm text-ink-2">
+          {referenceData.title}<span class="text-muted"> · </span>{referenceData.company}
+        </p>
+        {
+          referenceData.linkedin && (
+            <a
+              href={referenceData.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="profile-link mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-ink underline decoration-rule underline-offset-4 hover:decoration-ink"
+            >
+              <svg class="size-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.55V9h3.57v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z" />
+              </svg>
+              {text.linkedin}
+            </a>
+          )
+        }
+      </div>
+
+      <dl class="mt-8 grid grid-cols-1 gap-y-4 border-t border-rule pt-6 text-sm">
+        <div>
+          <dt class="text-[0.6875rem] tracking-[0.12em] text-muted uppercase">{text.relationship}</dt>
+          <dd class="mt-1 text-ink-2">{referenceData.relationship}</dd>
+        </div>
+        <div>
+          <dt class="text-[0.6875rem] tracking-[0.12em] text-muted uppercase">{text.period}</dt>
+          <dd class="mt-1 text-ink-2 tabular-nums">{referenceData.period}</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="page-foot">
+    <span>{referenceNumber}</span>
+  </div>
+</div>
+</section>

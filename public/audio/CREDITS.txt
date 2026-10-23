@@ -1,0 +1,18 @@
+page-turn.wav
+Original file: inventory_sound_effects/turn_page.wav (unchanged)
+"Inventory Sound Effects" by artisticdude, submitted by Ogrebane.
+Source: https://opengameart.org/content/inventory-sound-effects
+License chosen: Creative Commons Attribution 3.0 Unported (CC BY 3.0)
+https://creativecommons.org/licenses/by/3.0/
+
+Pen strokes
+Title: pen writing
+Creator: blurplenoise
+Source: https://freesound.org/people/blurplenoise/sounds/692903/
+Preview source: https://cdn.freesound.org/previews/692/692903_14718470-hq.mp3
+License: CC0 1.0 Universal
+License URL: https://creativecommons.org/publicdomain/zero/1.0/
+Local file: pen-strokes.wav
+Changes: Two excerpts (2.40–2.96s and 3.48–3.92s), mono PCM,
+DC offset removal, 8x gain, 6ms edge fades, 100ms silence after each excerpt.
+The runtime alternates excerpts at their original pitch, matching each ink duration.

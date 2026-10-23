@@ -1,0 +1,38 @@
+---
+import { interfaceText, type Language } from '../i18n/ui';
+
+export interface KeywordSummaryItem {
+  key: string;
+  label: string;
+  people: number;
+}
+
+interface Props {
+  language: Language;
+  keywords: KeywordSummaryItem[];
+  total: number;
+}
+const { language, keywords, total } = Astro.props;
+const text = interfaceText[language];
+---
+
+{
+  keywords.length > 0 && (
+    <section aria-labelledby="themes-title">
+      <h2 id="themes-title" class="text-[0.6875rem] font-medium tracking-[0.12em] text-muted uppercase">
+        {text.summaryTitle}
+      </h2>
+      <ul class="mt-3 flex flex-wrap gap-1.5" role="list">
+        {keywords.map((keyword) => (
+          <li class="inline-flex items-center gap-2 rounded-md border border-rule py-1.5 pr-2 pl-2.5 text-[0.8125rem] font-medium text-ink">
+            <span>{keyword.label}</span>
+            <span aria-hidden="true" class="text-[0.6875rem] text-muted tabular-nums">
+              {text.people(keyword.people, total)}
+            </span>
+            <span class="sr-only">{text.peopleAria(keyword.people, total)}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}

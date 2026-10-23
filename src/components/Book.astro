@@ -1,0 +1,168 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import ThemeSummary, { type KeywordSummaryItem } from './ThemeSummary.astro';
+import ProfilePage from './ProfilePage.astro';
+import BodyPage from './BodyPage.astro';
+import site from '../content/site.json';
+import { interfaceText, type Language } from '../i18n/ui';
+
+interface Props {
+  language: Language;
+  rendered: { entry: CollectionEntry<'references'>; Content: any }[];
+  keywords: KeywordSummaryItem[];
+}
+const { language, rendered, keywords } = Astro.props;
+const text = interfaceText[language];
+const total = rendered.length;
+const name = site.name[language];
+const tagline = site.tagline[language];
+const intro = site.intro[language];
+const updatedLabel = new Intl.DateTimeFormat(language === 'ko' ? 'ko-KR' : 'en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  timeZone: 'UTC',
+}).format(new Date(site.updated));
+
+const soundCredits = [
+  { label: text.pageTurnSound, title: 'Inventory Sound Effects', author: 'artisticdude', source: 'https://opengameart.org/content/inventory-sound-effects', license: 'CC BY 3.0', licenseUrl: 'https://creativecommons.org/licenses/by/3.0/', changes: text.originalSound },
+  { label: text.penSound, title: 'pen writing', author: 'blurplenoise', source: 'https://freesound.org/people/blurplenoise/sounds/692903/', license: 'CC0', licenseUrl: 'https://creativecommons.org/publicdomain/zero/1.0/', changes: text.editedSound },
+];
+---
+
+<main class="book-stage">
+  <div class="book-host" data-book-host data-label-previous={text.prev} data-label-next={text.next}>
+    <p class="sr-only" data-book-counter role="status" aria-live="polite">1 / 1</p>
+    <aside class="corner-guide no-print" data-book-guide hidden role="status">
+      <svg class="corner-guide-arrow" viewBox="0 0 64 56" fill="none" aria-hidden="true">
+        <path d="M8 49C8 19 31 37 54 8m-16 2 17-4-2 18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      <p class="font-semibold">{text.cornerGuideTitle}</p>
+      <p class="mt-1">{text.cornerGuideBody}</p>
+    </aside>
+    <!-- Cover -->
+    <section class="page page--cover" data-page="cover" id="cover" aria-label={text.pageTitle}>
+<div class="page-inner">
+      <div class="flex flex-1 flex-col justify-center">
+        <h1 class="text-[clamp(2.25rem,5.5vw,4.5rem)] leading-[1.02] font-semibold tracking-[-0.03em]">{name}</h1>
+        <p class="mt-5 max-w-[26ch] text-[clamp(0.9375rem,1.2vw,1.125rem)] leading-snug" style="color: color-mix(in oklab, var(--page) 70%, transparent);">
+          {tagline}
+        </p>
+      </div>
+      <footer class="sound-credits" aria-label={text.soundCredits}>
+        <h2 class="font-medium">{text.soundCredits}</h2>
+        {soundCredits.map(credit => (
+          <p>
+            {credit.label}: <a href={credit.source} target="_blank" rel="noopener noreferrer">{credit.title}</a>
+            {' — '}{credit.author}{' · '}
+            <a href={credit.licenseUrl} target="_blank" rel="noopener noreferrer">{credit.license}</a>
+            {' · '}{credit.changes}
+          </p>
+        ))}
+      </footer>
+    </div>
+</section>
+
+    <!-- Inside cover: intro + themes -->
+    <section class="page" data-page="intro" aria-label={text.introTitle}>
+<div class="page-inner">
+      <div class="page-head"><span>{text.introTitle}</span></div>
+      <div class="page-body">
+        <p class="max-w-[38ch] text-[clamp(1rem,1.3vw,1.25rem)] leading-relaxed font-medium tracking-tight text-ink">{intro}</p>
+        <div class="mt-10">
+          <ThemeSummary language={language} keywords={keywords} total={total} />
+        </div>
+      </div>
+      <div class="page-foot"><span></span><span>i</span></div>
+    </div>
+</section>
+
+    <!-- Contents -->
+    <section class="page" data-page="contents" id="contents" aria-label={text.contents}>
+<div class="page-inner">
+      <div class="page-head"><span>{text.contents}</span></div>
+      <div class="page-body">
+        <ol class="divide-y divide-rule">
+          {
+            rendered.map(({ entry }, index) => (
+              <li>
+                <a
+                  href={`#ref-${entry.data.refId}`}
+                  class="group flex items-baseline gap-4 py-3.5 transition-colors hover:text-ink"
+                >
+                  <span class="w-7 shrink-0 text-xs text-muted tabular-nums group-hover:text-ink">{String(index + 1).padStart(2, '0')}</span>
+                  <span class="min-w-0 flex-1">
+                    <span class="block text-[0.9375rem] font-semibold tracking-tight text-ink">{entry.data.name}</span>
+                    <span class="block truncate text-xs text-ink-2">
+                      {entry.data.title}
+                      <span class="text-muted"> · </span>
+                      {entry.data.company}
+                    </span>
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+        <p class="no-print mt-8 text-xs text-muted">{text.navHint}</p>
+      </div>
+      <div class="page-foot"><span></span><span>ii</span></div>
+    </div>
+</section>
+
+    <!-- References -->
+    {
+      rendered.map(({ entry, Content }, index) => (
+        <>
+          <ProfilePage language={language} entry={entry} index={index + 1} total={total} />
+          <BodyPage language={language} entry={entry} Content={Content} index={index + 1} total={total} />
+        </>
+      ))
+    }
+
+    <!-- Back cover -->
+    <section class="page page--back" data-page="back" id="end" aria-label={text.backTitle}>
+<div class="page-inner">
+      <div class="page-head" style="color: color-mix(in oklab, var(--page) 55%, transparent);">
+        <span>{name}</span>
+      </div>
+      <div class="flex flex-1 flex-col justify-center">
+        <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] leading-tight font-semibold tracking-tight">{text.backTitle}</h2>
+        <p class="mt-4 max-w-[36ch] text-[0.9375rem] leading-relaxed" style="color: color-mix(in oklab, var(--page) 70%, transparent);">
+          {text.backBody}
+        </p>
+        <ul class="mt-8 flex flex-wrap gap-2 text-sm">
+          {
+            site.links.email && (
+              <li>
+                <a href={`mailto:${site.links.email}`} class="inline-flex h-9 items-center rounded-md border px-3 font-medium" style="border-color: color-mix(in oklab, var(--page) 30%, transparent);">
+                  {text.email}
+                </a>
+              </li>
+            )
+          }
+          {
+            site.links.linkedin && (
+              <li>
+                <a href={site.links.linkedin} target="_blank" rel="noopener noreferrer" class="inline-flex h-9 items-center rounded-md border px-3 font-medium" style="border-color: color-mix(in oklab, var(--page) 30%, transparent);">
+                  LinkedIn
+                </a>
+              </li>
+            )
+          }
+        </ul>
+      </div>
+      <div class="page-foot" style="color: color-mix(in oklab, var(--page) 55%, transparent);">
+        <span>{text.updated} · <time datetime={site.updated}>{updatedLabel}</time></span>
+        <span>{site.links.email}</span>
+      </div>
+    </div>
+</section>
+  </div>
+</main>
+
+<script>
+  import { initBook } from '../scripts/book';
+  const host = document.querySelector<HTMLElement>('[data-book-host]');
+  if (host) initBook(host);
+</script>

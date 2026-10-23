@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<style>
+  @font-face { font-family: "Pretendard Variable"; src: url("../node_modules/pretendard/dist/web/variable/woff2/PretendardVariable.woff2") format("woff2"); font-weight: 45 920; }
+  html, body { margin: 0; width: 1200px; height: 630px; background: #e9e9ec; font-family: "Pretendard Variable", system-ui, sans-serif; color: #111113; }
+  .wrap { position: relative; width: 1200px; height: 630px; overflow: hidden; }
+  .book { position: absolute; left: 150px; top: 70px; width: 900px; height: 600px; display: flex; box-shadow: 0 40px 80px -40px rgba(0,0,0,.45); }
+  .cover { width: 450px; height: 100%; background: #111113; color: #fff; box-sizing: border-box; padding: 44px 48px; display: flex; flex-direction: column; }
+  .page { width: 450px; height: 100%; background: #fff; box-sizing: border-box; padding: 44px 48px; position: relative; }
+  .page::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 40px; background: linear-gradient(to right, rgba(0,0,0,.12), transparent); }
+  .head { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; display: flex; justify-content: space-between; opacity: .6; }
+  .name { margin-top: 150px; font-size: 54px; font-weight: 650; letter-spacing: -0.03em; line-height: 1.02; }
+  .tag { margin-top: 18px; font-size: 17px; line-height: 1.4; opacity: .7; max-width: 24ch; }
+  .quote { margin-top: 28px; font-size: 19px; line-height: 1.75; letter-spacing: -0.005em; }
+  mark { background: rgba(253,224,71,.6); color: inherit; padding: .06em .18em; border-radius: 3px; }
+  .chips { margin-top: 26px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { border: 1px solid #e7e7ea; border-radius: 6px; padding: 6px 9px; font-size: 13px; font-weight: 500; }
+  .chip span { color: #8a8a92; font-size: 11px; margin-left: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="book">
+    <div class="cover">
+      <div class="head"><span>References</span><span>2026</span></div>
+      <div class="name">Taehyun Lee</div>
+      <div class="tag">What my former colleagues say about working with me</div>
+    </div>
+    <div class="page">
+      <div class="head"><span>Jihoon Park</span><span>1 / 7</span></div>
+      <p class="quote">I managed Taehyun for three years. <mark>He is the engineer I hand the ambiguous problems to</mark>, because he treats them as his own until they are resolved, not merely until his part is done.</p>
+      <div class="chips"><span class="chip">Ownership<span>5 of 7</span></span><span class="chip">Communication<span>4 of 7</span></span><span class="chip">Mentoring<span>3 of 7</span></span></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

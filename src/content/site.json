@@ -1,0 +1,17 @@
+{
+  "url": "https://r.townof.me",
+  "updated": "2026-10-21",
+  "name": { "en": "Taehyun Lee", "ko": "이태현" },
+  "tagline": {
+    "en": "What people I've worked with say about me",
+    "ko": "함께 일했던 사람들이 전하는 이야기"
+  },
+  "intro": {
+    "en": "Each reference was written voluntarily by someone I've worked with. The English versions are translations of the Korean originals.",
+    "ko": "추천사는 함께 일했던 사람들이 자발적으로 작성해 주었습니다. 영어본은 한글 원문을 번역한 것입니다."
+  },
+  "links": {
+    "email": "0417taehyun@gmail.com",
+    "linkedin": "https://www.linkedin.com/in/weekwith-me"
+  }
+}

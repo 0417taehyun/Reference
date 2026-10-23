@@ -1,0 +1,47 @@
+---
+import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
+import '../styles/global.css';
+import { basePath, languages, interfaceText, type Language } from '../i18n/ui';
+
+interface Props {
+  language: Language;
+  title: string;
+  description: string;
+}
+
+const { language, title, description } = Astro.props;
+const text = interfaceText[language];
+const siteUrl = Astro.site ?? new URL('http://localhost/');
+const canonical = new URL(basePath[language], siteUrl);
+const ogImage = new URL('/og.png', siteUrl);
+---
+
+<!doctype html>
+<html lang={text.htmlLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {languages.map((languageCode) => <link rel="alternate" hreflang={languageCode} href={new URL(basePath[languageCode], siteUrl)} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL(basePath.en, siteUrl)} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#e6dbc8" />
+
+    <meta property="og:type" content="profile" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={language === 'ko' ? 'ko_KR' : 'en_US'} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script is:inline>document.documentElement.classList.add("js");</script>
+  </head>
+  <body class="bg-bg text-ink">
+    <slot />
+
+  </body>
+</html>

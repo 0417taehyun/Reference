@@ -1,0 +1,34 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Header from './Header.astro';
+import Book from './Book.astro';
+import site from '../content/site.json';
+import { collectKeywords } from '../lib/keywords.mjs';
+import { keywordLabel, interfaceText, type Language } from '../i18n/ui';
+
+interface Props {
+  language: Language;
+}
+const { language } = Astro.props;
+const text = interfaceText[language];
+
+const entries = (await getCollection('references', (entry) => entry.id.startsWith(`${language}/`))).sort(
+  (first, second) => first.data.order - second.data.order,
+);
+const rendered = await Promise.all(
+  entries.map(async (entry) => ({ entry, Content: (await render(entry)).Content })),
+);
+const keywords = collectKeywords(entries.map((entry) => ({ refId: entry.data.refId, keywords: entry.data.keywords }))).map((keyword) => ({
+  ...keyword,
+  label: keywordLabel(keyword.key, language),
+}));
+
+const name = site.name[language];
+const title = `${name} · ${text.pageTitle}`;
+---
+
+<Base language={language} title={title} description={site.tagline[language]}>
+  <Header language={language} />
+  <Book language={language} rendered={rendered} keywords={keywords} />
+</Base>

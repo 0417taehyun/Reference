@@ -1,0 +1,67 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { basePath, interfaceText, type Language } from '../i18n/ui';
+
+interface Props {
+  language: Language;
+  entry: CollectionEntry<'references'>;
+  Content: any;
+  index: number;
+  total: number;
+}
+const { language, entry, Content, index, total } = Astro.props;
+const text = interfaceText[language];
+const referenceData = entry.data;
+const referenceNumber = String(index).padStart(2, '0');
+const alternateLanguage: Language = language === 'en' ? 'ko' : 'en';
+const alternateHref = `${basePath[alternateLanguage]}#ref-${referenceData.refId}`;
+---
+
+<section
+  class="page page--body"
+  data-page="body"
+  data-ref={referenceData.refId}
+  data-annotations={JSON.stringify(referenceData.annotations)}
+  id={`ref-${referenceData.refId}`}
+  aria-labelledby={`ref-${referenceData.refId}-reader-name`}
+>
+<div class="page-inner">
+  <div class="page-head">
+    <span>{referenceData.name}</span>
+    <span>{text.pageOf(index, total)}</span>
+  </div>
+
+  <div class="page-body">
+    <header class="reader-profile mb-6 border-b border-rule pb-5 lg:hidden">
+      <div class="flex items-center gap-3">
+        <img src={referenceData.photo} alt="" width="48" height="48" loading="lazy" referrerpolicy="no-referrer" class="size-12 shrink-0 rounded-lg object-cover" />
+        <div class="min-w-0">
+          <h2 id={`ref-${referenceData.refId}-reader-name`} class="text-lg leading-snug font-semibold tracking-tight">{referenceData.name}</h2>
+          <p class="mt-1 text-xs leading-relaxed text-ink-2">{referenceData.title} · {referenceData.company}</p>
+        </div>
+      </div>
+      <dl class="mt-4 grid gap-2 text-xs leading-relaxed">
+        <div class="flex gap-3"><dt class="shrink-0 text-muted">{text.relationship}</dt><dd>{referenceData.relationship}</dd></div>
+        <div class="flex gap-3"><dt class="shrink-0 text-muted">{text.period}</dt><dd>{referenceData.period}</dd></div>
+      </dl>
+      {referenceData.linkedin && <a href={referenceData.linkedin} target="_blank" rel="noopener noreferrer" class="mt-3 inline-flex min-h-8 items-center text-xs text-ink-2 underline underline-offset-4">{text.linkedin} ↗</a>}
+    </header>
+    <div class="prose">
+      <Content />
+    </div>
+    <footer class="mt-8 border-t border-rule pt-3 text-xs text-muted">
+      {referenceData.translated && <p>{text.translatedNote}</p>}
+      <p class="no-print mt-1">
+        <a href={alternateHref} hreflang={alternateLanguage} class="underline underline-offset-4 hover:text-ink">
+          {referenceData.translated ? text.readOriginal : text.readTranslation}
+        </a>
+      </p>
+    </footer>
+  </div>
+
+  <div class="page-foot">
+    <span></span>
+    <span>{referenceNumber}</span>
+  </div>
+</div>
+</section>

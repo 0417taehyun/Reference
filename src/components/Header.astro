@@ -1,0 +1,41 @@
+---
+import { basePath, interfaceText, type Language } from '../i18n/ui';
+
+interface Props {
+  language: Language;
+}
+const { language } = Astro.props;
+const text = interfaceText[language];
+const alternateLanguage: Language = language === 'en' ? 'ko' : 'en';
+const alternateHref = basePath[alternateLanguage];
+
+const buttonClasses =
+  'inline-flex h-10 items-center gap-1.5 rounded-md border border-rule bg-page px-3 text-xs font-medium text-ink-2 transition-colors hover:border-ink hover:text-ink';
+---
+
+<header class="no-print h-14 shrink-0">
+  <div class="mx-auto flex h-full max-w-[90rem] items-center justify-end px-4 sm:px-6">
+    <nav class="flex items-center gap-2" aria-label={text.siteControls}>
+      <a href={alternateHref} data-lang-link={alternateHref} hreflang={alternateLanguage} lang={alternateLanguage} aria-label={text.switchLangAria} class={buttonClasses}>
+        {text.switchLang}
+      </a>
+      <button type="button" data-motion-toggle data-label-on={text.motionOn} data-label-off={text.motionOff} aria-label={text.motionOn} aria-pressed="true" class={`${buttonClasses} motion-toggle`}>
+        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <path class="motion-pause" d="M8 5v14M16 5v14" stroke-linecap="round"></path>
+          <path class="motion-play" d="m8 5 11 7-11 7V5Z" stroke-linejoin="round"></path>
+        </svg>
+        <span>{text.motionLabel}</span>
+        <span class="sr-only" data-motion-label>{text.motionOn}</span>
+      </button>
+      <button type="button" data-sound-toggle data-label-on={text.soundOn} data-label-off={text.soundOff} aria-label={text.soundOn} aria-pressed="true" class={`${buttonClasses} sound-toggle`}>
+        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <path d="M11 5 6 9H3v6h3l5 4V5Z" stroke-linejoin="round"></path>
+          <path class="sound-waves" d="M15 8c2 2 2 6 0 8m3-11c4 4 4 10 0 14" stroke-linecap="round"></path>
+          <path class="sound-muted" d="m16 9 5 6m0-6-5 6" stroke-linecap="round"></path>
+        </svg>
+        <span>{text.soundLabel}</span>
+        <span class="sr-only" data-sound-label>{text.soundOn}</span>
+      </button>
+    </nav>
+  </div>
+</header>
