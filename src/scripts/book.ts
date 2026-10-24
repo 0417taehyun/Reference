@@ -2,6 +2,7 @@ import { bookViews, paperCurve, paperCurl, paperPanelMatrix } from '../lib/book-
 import { createBookAudio } from './book-audio';
 import { createAnnotations } from './book-annotations';
 import { BookScrollHints } from './book-scroll';
+import { initKeywordIndex, type KeywordIndex } from './book-keywords';
 import { clamp, swipeIntent, shouldCompleteTurn, settleDuration, turnThreshold } from '../lib/book-interaction.mjs';
 import { readSession, writeSession } from '../lib/session';
 import { syncToggleButtons } from '../lib/book-dom';
@@ -24,6 +25,7 @@ export class BookController {
     audio: ReturnType<typeof createBookAudio>;
     ink: ReturnType<typeof createAnnotations>;
     scrollHints: BookScrollHints;
+    keywords: KeywordIndex | null;
     counter: HTMLElement | null;
     guide: HTMLElement | null;
     guideCompleted = readSession('book-corner-guide-v1') === 'done';
@@ -65,6 +67,7 @@ export class BookController {
             this.frame.append(this.guide);
         this.host.append(this.frame);
         this.scrollHints = new BookScrollHints(this.host, this.pages, () => this.motionEnabled && !this.reducedMotionMediaQuery.matches);
+        this.keywords = initKeywordIndex(this.host, () => this.motionEnabled);
         this.leftCorner = this.corner(-1);
         this.rightCorner = this.corner(1);
         this.profiles = this.pages.flatMap((page, index) => page.dataset.page === 'profile' ? [index] : []);

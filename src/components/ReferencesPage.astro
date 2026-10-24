@@ -4,7 +4,7 @@ import Base from '../layouts/Base.astro';
 import Header from './Header.astro';
 import Book from './Book.astro';
 import site from '../content/site.json';
-import { collectKeywords } from '../lib/keywords.mjs';
+import { collectKeywords, excerptKeywords, keywordQuotes } from '../lib/keywords.mjs';
 import { keywordLabel, interfaceText, type Language } from '../i18n/ui';
 
 interface Props {
@@ -17,11 +17,26 @@ const entries = (await getCollection('references', (entry) => entry.id.startsWit
   (first, second) => first.data.order - second.data.order,
 );
 const rendered = await Promise.all(
-  entries.map(async (entry) => ({ entry, Content: (await render(entry)).Content })),
+  entries.map(async (entry) => {
+    const { Content, remarkPluginFrontmatter } = await render(entry);
+    return { entry, Content, excerpts: remarkPluginFrontmatter.keywordExcerpts ?? [] };
+  }),
 );
-const keywords = collectKeywords(entries.map((entry) => ({ refId: entry.data.refId, keywords: entry.data.keywords }))).map((keyword) => ({
+// Keywords come from ==phrase=={keyword} tags; each tagged sentence becomes a quote.
+const references = rendered.map(({ entry, excerpts }, index) => ({
+  refId: entry.data.refId,
+  number: String(index + 1).padStart(2, '0'),
+  name: entry.data.name,
+  title: entry.data.title,
+  company: entry.data.company,
+  photo: entry.data.photo,
+  keywords: excerptKeywords(excerpts),
+  excerpts,
+}));
+const keywords = collectKeywords(references).map((keyword) => ({
   ...keyword,
   label: keywordLabel(keyword.key, language),
+  quotes: keywordQuotes(references, keyword.key),
 }));
 
 const name = site.name[language];

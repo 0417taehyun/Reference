@@ -29,6 +29,8 @@ export const interfaceText = {
         summaryTitle: 'Common themes in these references',
         people: (count: number, total: number) => `${count} of ${total}`,
         peopleAria: (count: number, total: number) => `mentioned by ${count} of ${total} people`,
+        readInContext: 'Read in context',
+        readInContextAria: (name: string) => `Read ${name}'s reference in context`,
         referenceLabel: (index: number, total: number) => `Reference ${index} of ${total}`,
         relationship: 'Relationship',
         period: 'Worked together',
@@ -71,6 +73,8 @@ export const interfaceText = {
         summaryTitle: '공통으로 언급한 키워드',
         people: (count: number, total: number) => `${total}명 중 ${count}명`,
         peopleAria: (count: number, total: number) => `${total}명 중 ${count}명이 언급`,
+        readInContext: '본문에서 보기',
+        readInContextAria: (name: string) => `${name}의 추천사 본문에서 보기`,
         referenceLabel: (index: number, total: number) => `추천사 ${index} / ${total}`,
         relationship: '관계',
         period: '함께 일한 기간',
@@ -88,7 +92,7 @@ export const interfaceText = {
     },
 } satisfies Record<Language, Record<string, unknown>>;
 /**
- * Localized labels for keys listed in reference frontmatter `keywords`.
+ * Localized labels for inline keyword tags such as `==phrase=={성장}`.
  * Add a key here when you introduce a new keyword; unknown keys fall back
  * to a title-cased version of the key.
  */

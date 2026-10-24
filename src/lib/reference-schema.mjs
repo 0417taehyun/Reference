@@ -19,6 +19,5 @@ export const referenceSchema = schemaBuilder.object({
     photo: schemaBuilder.string().refine(isPhotoSource, 'Use a root-relative image path or an HTTPS image URL without embedded credentials.'),
     linkedin: schemaBuilder.string().url().refine(isLinkedInUrl, 'Use an HTTPS LinkedIn profile URL.').optional(),
     translated: schemaBuilder.boolean().default(false), originalLanguage: schemaBuilder.enum(['ko', 'en']).optional(),
-    keywords: schemaBuilder.array(schemaBuilder.string().trim().min(1)).default([]),
     annotations: schemaBuilder.array(annotationSchema).default([]),
 }).strict();

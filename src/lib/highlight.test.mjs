@@ -18,6 +18,13 @@ describe('scanHighlights', () => {
         expect(highlights).toHaveLength(1);
         expect(highlights[0].text).toBe('문제를 끝까지 책임지는');
     });
+    it('reads one or more keyword tags and hides them from the rendered underline', async () => {
+        const source = '==성장 가능성=={성장}과 ==유연한 설계=={ 설계 , 성장,설계 }, ==태그 없음==';
+        expect(scanHighlights(source, 'alden').map(highlight => highlight.keywords)).toEqual([['성장'], ['설계', '성장'], []]);
+        const rendered = String(await remark().use(remarkHighlight).use(remarkHtml, { sanitize: false }).process(source));
+        expect(rendered).toContain('">유연한 설계</mark>, <mark');
+        expect(rendered).not.toContain('{');
+    });
     it('renders independent underlines without keyword attributes', async () => {
         const source = '==성장 가능성==과 ==유연한 설계==';
         expect(scanHighlights(source, 'alden').map(highlight => highlight.text)).toEqual(['성장 가능성', '유연한 설계']);
@@ -37,6 +44,22 @@ describe('remarkHighlight', () => {
         expect(html).toContain('<mark id="hl-01-park-2">');
         expect(html).toContain('<mark id="hl-01-park-3">this one has no theme</mark>');
         expect(html).not.toContain('==');
+    });
+    it('exposes tagged sentences to Astro with ids that match the rendered marks', async () => {
+        const frontmatter = { refId: 'henry' };
+        const file = await remark()
+            .use(() => (tree, file) => {
+            file.data.astro = { frontmatter };
+        })
+            .use(remarkHighlight)
+            .use(remarkHtml, { sanitize: false })
+            .process('First ==plain==.\n\n- A list ==tagged item=={협업} here. Next.\n\n## ==Heading==\n\nLast ==one=={협업}.');
+        expect(frontmatter.keywordExcerpts.map(excerpt => [excerpt.text, excerpt.highlights[0].id])).toEqual([
+            ['A list tagged item here.', 'hl-henry-2'],
+            ['Last one.', 'hl-henry-4'],
+        ]);
+        expect(String(file)).toContain('<mark id="hl-henry-2">tagged item</mark>');
+        expect(String(file)).toContain('<mark id="hl-henry-4">one</mark>');
     });
     it('prefers frontmatter refId over the filename', async () => {
         const file = await remark()

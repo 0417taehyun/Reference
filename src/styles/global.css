@@ -76,6 +76,63 @@ mark.is-flash {
 .ink-layer [data-ink="circle"] { stroke: #a35d48; stroke-width: 1.55; }
 .ink-layer [data-ink="star"] { stroke: #a35d48; stroke-width: 1.7; }
 
+/* ---------- Keyword index ---------- */
+/* Chips are index terms; the open one is stamped in ink and its quotes are set below like book index entries. */
+.keyword-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  min-height: 2.25rem;
+  padding: .375rem .625rem .375rem .75rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  color: var(--ink);
+  font-size: .8125rem;
+  font-weight: 500;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.keyword-chip:hover { border-color: var(--ink); }
+.keyword-chip-count { font-size: .6875rem; color: var(--muted); font-variant-numeric: tabular-nums; transition: color .2s ease; }
+.keyword-chip-icon { width: 9px; height: 9px; flex: none; color: var(--muted); stroke: currentColor; stroke-width: 1.3; stroke-linecap: round; transition: transform .35s cubic-bezier(.2, .7, .2, 1), color .2s ease; }
+.keyword-chip[aria-expanded="true"] { background: var(--ink); border-color: var(--ink); color: var(--page); }
+.keyword-chip[aria-expanded="true"] :is(.keyword-chip-count, .keyword-chip-icon) { color: color-mix(in oklab, var(--page) 62%, transparent); }
+.keyword-chip[aria-expanded="true"] .keyword-chip-icon { transform: rotate(45deg); }
+:root[data-motion="off"] .keyword-chip-icon { transition: color .2s ease; }
+html:not(.js) .keyword-chip { cursor: default; }
+html:not(.js) .keyword-chip-icon { display: none; }
+
+html.js .keyword-panel:not([data-open]) { display: none; }
+/* The gap sits on the stage, so its animated height starts right under the chips. */
+.keyword-stage { margin-top: 1.5rem; }
+.keyword-stage[data-sizing] { overflow: hidden; }
+html:not(.js) .keyword-panel + .keyword-panel { margin-top: 1.5rem; }
+.keyword-panel::before { content: ''; display: block; height: 1px; background: var(--ink); transform-origin: left; }
+.keyword-panel-title { margin: 1rem 0 .25rem; font-size: .8125rem; font-weight: 600; }
+html.js .keyword-panel-title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.keyword-quote { display: flex; gap: .75rem; padding: 1.125rem 0 1.25rem; }
+.keyword-quote + .keyword-quote { border-top: 1px solid var(--rule); }
+.keyword-quote-number { width: 1.75rem; flex: none; padding-top: .3rem; font-size: .75rem; line-height: 1.4; color: var(--muted); font-variant-numeric: tabular-nums; }
+.keyword-quote-text { position: relative; font-size: .9375rem; line-height: 1.75; letter-spacing: -.005em; color: var(--ink); word-break: keep-all; overflow-wrap: anywhere; }
+.keyword-quote-text p + p { margin-top: .5em; }
+.keyword-quote-by { display: flex; align-items: center; gap: .625rem; margin-top: .875rem; }
+.keyword-quote-by img { width: 1.75rem; height: 1.75rem; flex: none; border-radius: 6px; object-fit: cover; }
+.keyword-quote-name { display: block; font-size: .8125rem; font-weight: 600; line-height: 1.3; letter-spacing: -.01em; }
+.keyword-quote-meta { display: block; margin-top: .0625rem; font-size: .6875rem; line-height: 1.4; color: var(--ink-2); word-break: keep-all; }
+.keyword-quote-link { display: inline-flex; flex: none; align-items: center; gap: .25rem; min-height: 2rem; font-size: .6875rem; color: var(--muted); text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 4px; transition: color .2s ease, text-decoration-color .2s ease; }
+.keyword-quote-link:hover { color: var(--ink); text-decoration-color: currentColor; }
+.keyword-quote-link span { display: inline-block; transition: transform .2s ease; }
+.keyword-quote-link:hover span { transform: translateX(2px); }
+/* Opening a keyword animates --sweep from 0% to 140% to read each quote in; at rest the mask covers nothing. */
+@property --sweep { syntax: '<percentage>'; inherits: false; initial-value: 140%; }
+.keyword-quote {
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(var(--sweep) - 40%), transparent var(--sweep));
+  mask-image: linear-gradient(to bottom, #000 calc(var(--sweep) - 40%), transparent var(--sweep));
+}
+
 /* ---------- Stage & book host ---------- */
 .book-stage {
   flex: 1;

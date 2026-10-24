@@ -1,10 +1,16 @@
 ---
 import { interfaceText, type Language } from '../i18n/ui';
 
+export interface KeywordQuote {
+  reference: { refId: string; number: string; name: string; title: string; company: string; photo: string };
+  sentences: { href: string; segments: { text: string; marked: boolean }[] }[];
+}
+
 export interface KeywordSummaryItem {
   key: string;
   label: string;
   people: number;
+  quotes: KeywordQuote[];
 }
 
 interface Props {
@@ -14,25 +20,63 @@ interface Props {
 }
 const { language, keywords, total } = Astro.props;
 const text = interfaceText[language];
+const panelId = (index: number) => `keyword-${index + 1}`;
 ---
 
 {
   keywords.length > 0 && (
-    <section aria-labelledby="themes-title">
+    <section class="keyword-index" aria-labelledby="themes-title" data-keyword-index>
       <h2 id="themes-title" class="text-[0.6875rem] font-medium tracking-[0.12em] text-muted uppercase">
         {text.summaryTitle}
       </h2>
       <ul class="mt-3 flex flex-wrap gap-1.5" role="list">
-        {keywords.map((keyword) => (
-          <li class="inline-flex items-center gap-2 rounded-md border border-rule py-1.5 pr-2 pl-2.5 text-[0.8125rem] font-medium text-ink">
-            <span>{keyword.label}</span>
-            <span aria-hidden="true" class="text-[0.6875rem] text-muted tabular-nums">
-              {text.people(keyword.people, total)}
-            </span>
-            <span class="sr-only">{text.peopleAria(keyword.people, total)}</span>
+        {keywords.map((keyword, index) => (
+          <li>
+            <button type="button" class="keyword-chip" data-keyword-chip aria-expanded="false" aria-controls={panelId(index)}>
+              <span>{keyword.label}</span>
+              <span aria-hidden="true" class="keyword-chip-count">
+                {text.people(keyword.people, total)}
+              </span>
+              <span class="sr-only">{text.peopleAria(keyword.people, total)}</span>
+              <svg class="keyword-chip-icon" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                <path d="M5 1.25v7.5M1.25 5h7.5" />
+              </svg>
+            </button>
           </li>
         ))}
       </ul>
+      <div class="keyword-stage" data-keyword-stage>
+        {keywords.map((keyword, index) => (
+          <section id={panelId(index)} class="keyword-panel" data-keyword-panel aria-labelledby={`${panelId(index)}-title`}>
+            <h3 id={`${panelId(index)}-title`} class="keyword-panel-title">{keyword.label}</h3>
+            <ol role="list">
+              {keyword.quotes.map(({ reference, sentences }) => (
+                <li class="keyword-quote">
+                  <span class="keyword-quote-number" aria-hidden="true">{reference.number}</span>
+                  <figure class="min-w-0 flex-1">
+                    <blockquote class="keyword-quote-text">
+                      {sentences.map((sentence) => (
+                        <p>{sentence.segments.map((segment) => (segment.marked ? <mark>{segment.text}</mark> : segment.text))}</p>
+                      ))}
+                    </blockquote>
+                    <figcaption class="keyword-quote-by">
+                      <img src={reference.photo} alt="" width="28" height="28" loading="lazy" decoding="async" referrerpolicy="no-referrer" />
+                      <span class="min-w-0 flex-1">
+                        <span class="keyword-quote-name">{reference.name}</span>
+                        <span class="keyword-quote-meta">{reference.title} · {reference.company}</span>
+                      </span>
+                      <a href={sentences[0].href} class="keyword-quote-link no-print" aria-label={text.readInContextAria(reference.name)}>
+                        {text.readInContext}
+                        <span aria-hidden="true">→</span>
+                      </a>
+                    </figcaption>
+                  </figure>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ))}
+      </div>
     </section>
   )
 }

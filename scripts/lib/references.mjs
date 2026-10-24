@@ -5,10 +5,10 @@ import { parse, stringify } from 'yaml';
 import { remark } from 'remark';
 import { lint } from 'markdownlint/promise';
 import { referenceSchema } from '../../src/lib/reference-schema.mjs';
-import { HIGHLIGHT_RE, scanHighlights } from '../../src/lib/highlight.mjs';
+import { HIGHLIGHT_RE, KEYWORD_RE, scanHighlights } from '../../src/lib/highlight.mjs';
 export const LANGUAGES = ['ko', 'en'];
 export const TRANSLATED_FIELDS = ['name', 'title', 'relationship'];
-export const PRESERVED_FIELDS = ['refId', 'order', 'period', 'photo', 'linkedin', 'keywords'];
+export const PRESERVED_FIELDS = ['refId', 'order', 'period', 'photo', 'linkedin'];
 export const TRANSLATION_GLOSSARY = [{ ko: '당근마켓', en: 'Karrot' }, { ko: '전 당근마켓', en: 'Formerly at Karrot' }];
 export const MARKDOWN_CONFIG = { default: true, MD013: false, MD041: false, MD033: true };
 export function referenceLocation(path, root = resolve('references')) {
@@ -21,7 +21,9 @@ export function parseReference(source, filename) {
     assert(Buffer.byteLength(source, 'utf8') <= 64 * 1024, `${filename}: reference exceeds 64 KiB`);
     const match = /^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/u.exec(source);
     assert(match, `${filename}: YAML frontmatter is required`);
-    const data = referenceSchema.parse(parse(match[1], { maxAliasCount: 0 }));
+    const frontmatter = parse(match[1], { maxAliasCount: 0 });
+    assert(!Object.hasOwn(Object(frontmatter), 'keywords'), `${filename}: tag highlights in the body instead of listing keywords, e.g. ==phrase=={keyword}`);
+    const data = referenceSchema.parse(frontmatter);
     const body = source.slice(match[0].length).trim() + '\n';
     assert(body.trim(), `${filename}: reference body is empty`);
     assert(data.refId === basename(filename, '.md'), `${filename}: refId must match the filename`);
@@ -76,14 +78,14 @@ export function validateAnnotations(reference) {
     const missing = reference.data.annotations.find(note => !text.includes(note.text));
     assert(!missing, `${reference.filename || 'reference'}: annotation phrase is absent from body: ${missing?.text}`);
     const malformed = reference.body.replace(HIGHLIGHT_RE, '').includes('==');
-    assert(!malformed, 'Malformed highlight; use ==plain text==.');
-    assert(!Array.from(reference.body.matchAll(HIGHLIGHT_RE)).some(match => match[2]), 'Move inline keyword tags to the frontmatter keywords list.');
+    assert(!malformed, 'Malformed highlight; use ==plain text== or ==plain text=={keyword}.');
     scanHighlights(reference.body, reference.data.refId).forEach(validateHighlight);
 }
 export function validateHighlight(highlight) {
     const tree = remark().parse(highlight.text);
     const paragraph = tree.children[0];
     assert(tree.children.length === 1 && paragraph?.type === 'paragraph' && paragraph.children.every(node => node.type === 'text'), 'Highlights must contain plain text without nested Markdown.');
+    assert(highlight.keywords.every(key => KEYWORD_RE.test(key)), `Keyword tags use letters, digits and hyphens, separated by commas: ==${highlight.text}=={keyword} or {first,second}.`);
 }
 export async function lintReference(reference) {
     validateAnnotations(reference);
@@ -104,7 +106,9 @@ export function validatePair(source, target) {
     PRESERVED_FIELDS.forEach(field => assert.deepEqual(target.data[field], source.data[field], `${source.filename}: ${field} differs between languages`));
     validateCompany(source, target);
     validateGlossary(target);
-    assert.equal(scanHighlights(target.body, target.data.refId).length, scanHighlights(source.body, source.data.refId).length, 'Highlight count changed.');
+    const sourceHighlights = scanHighlights(source.body, source.data.refId), targetHighlights = scanHighlights(target.body, target.data.refId);
+    assert.equal(targetHighlights.length, sourceHighlights.length, 'Highlight count changed.');
+    assert.deepEqual(targetHighlights.map(highlight => highlight.keywords), sourceHighlights.map(highlight => highlight.keywords), `${source.filename}: keyword tags differ between languages`);
     assert.deepEqual(target.data.annotations.map(note => note.type), source.data.annotations.map(note => note.type), 'Annotation types/order changed.');
     assert.deepEqual(markdownStructure(markdownTree(target.body)), markdownStructure(markdownTree(source.body)), 'Markdown structure or link destinations changed.');
     source.data.annotations.forEach((_note, index) => validateAnnotationGroup(source, target, index));
@@ -142,7 +146,6 @@ export function translationPacket(reference) {
     return { sourceLanguage: reference.language, targetLanguage: reference.language === 'ko' ? 'en' : 'ko',
         data: { ...Object.fromEntries(TRANSLATED_FIELDS.map(field => [field, reference.data[field]])), company: reference.data.company }, body: reference.body,
         glossary: TRANSLATION_GLOSSARY,
-        keywords: reference.data.keywords,
         annotations: reference.data.annotations };
 }
 export function translatedReference(source, translation) {

@@ -10,11 +10,6 @@ photo: https://media.licdn.com/dms/image/v2/C5103AQGvw3j7ssNT4w/profile-displayp
 linkedin: https://www.linkedin.com/in/heesukahn
 translated: true
 originalLanguage: ko
-keywords:
-  - 협업
-  - 호기심
-  - 주도성
-  - 이해력
 annotations:
   - text: collaboration
     type: circle
@@ -28,13 +23,13 @@ annotations:
 
 I worked alongside Walter on the same team for two years and saw his growth as an engineer up close.
 
-Walter is a versatile engineer who combines technical expertise with ==strong communication and collaboration skills==.
+Walter is a versatile engineer who combines technical expertise with ==strong communication and collaboration skills=={협업}.
 
-What stands out most is how he taught himself low-level concepts such as codecs and compression technologies to gain a thorough understanding of the media domain, which was new to him, and then organized what he had learned and shared it with his colleagues. His efforts were especially valuable because our team did not have an expert in image or video technology at the time.
+What stands out most is how he ==taught himself low-level concepts such as codecs and compression technologies to gain a thorough understanding of the media domain, which was new to him=={호기심,이해력}, and then organized what he had learned and shared it with his colleagues. His efforts were especially valuable because our team did not have an expert in image or video technology at the time.
 
 He could explain complex technology in writing in a way that was easy for others to understand, and ==he was excellent at communicating his ideas clearly==. As a result, the knowledge Walter gained benefited the entire team rather than remaining his alone.
 
-Another strength I value highly in Walter is his ==ability to have a naturally positive influence on the people around him, even without a formal title or authority==.
+Another strength I value highly in Walter is his ==ability to have a naturally positive influence on the people around him, even without a formal title or authority=={주도성}.
 
 He never shied away from the less glamorous work the team needed done. He readily helped colleagues who were struggling, and when a new teammate joined, he took the initiative to approach them and thoughtfully help them settle into an unfamiliar environment. I believe these actions played a major role in building trust within the team and creating an atmosphere where people enjoyed working together.
 

@@ -1,6 +1,6 @@
 ---
 name: translate-reference
-description: Translate a missing Korean or English recommendation, or revise its translation when requested, while preserving keyword lists, underlines, circle/star annotations and metadata. Use for this repository's references, not general document translation.
+description: Translate a missing Korean or English recommendation, or revise its translation when requested, while preserving keyword tags, underlines, circle/star annotations and metadata. Use for this repository's references, not general document translation.
 ---
 
 Work from the repository root containing `scripts/references.mjs` and `references/`. Read the requested source and the relevant writing section in `README.md`. Preserve an existing counterpart unless the user requests a revision.
@@ -10,12 +10,12 @@ Run `npm run reference:packet -- references/ko/<refId>.md` (or `references/en/..
 Prepare temporary JSON with exactly these fields:
 
 - `name`, `title`, `relationship`: translated strings.
-- `body`: translated Markdown with unchanged paragraph/Markdown structure, link destinations, and underline count/order. Underlines use only `==highlighted text==`; do not append `{keyword}` tags.
+- `body`: translated Markdown with unchanged paragraph/Markdown structure, link destinations, and underline count/order. Underlines use `==highlighted text==`; copy any `{keyword}` tag that follows a source underline unchanged directly after the translated underline, for example `==a flexible design=={설계}`.
 - `annotations`: the same number and order of `{ "text": "...", "type": "circle" | "star" }` objects. Each translated text must occur verbatim in the translated body after removing underline delimiters. Notes sharing a source phrase must share its translated phrase. Translate the body and these target phrases together.
 
-Do not return `keywords` or `company` fields. The apply command copies canonical keyword identifiers unchanged, including Korean values such as `성장` and `설계`; the site localizes their display names. It localizes approved company names with the shared glossary and otherwise preserves them. It also copies `refId`, `order`, `period`, `photo` and `linkedin`. Do not invent achievements or an author-review claim. Keep underlines plain text and avoid raw HTML.
+Do not return a `company` field. Keyword tags are canonical identifiers: never translate, add, remove or move them, including Korean values such as `성장` and `설계`; the site localizes their display names. It localizes approved company names with the shared glossary and otherwise preserves them. It also copies `refId`, `order`, `period`, `photo` and `linkedin`. Do not invent achievements or an author-review claim. Keep underlines plain text and avoid raw HTML.
 
-Run `npm run reference:apply -- <source.md> <temporary-translation.json>`. For an explicitly requested revision of an existing counterpart, append `--replace`. The validator checks keywords, underlines, annotations, Markdown structure, links and metadata before writing. Refresh the packet if the source changed during translation. Correct the temporary translation and retry once when validation fails; preserve the source and report a remaining error.
+Run `npm run reference:apply -- <source.md> <temporary-translation.json>`. For an explicitly requested revision of an existing counterpart, append `--replace`. The validator checks keyword tags, underlines, annotations, Markdown structure, links and metadata before writing. Refresh the packet if the source changed during translation. Correct the temporary translation and retry once when validation fails; preserve the source and report a remaining error.
 
 Then run `npm run lint:references`. Report unrelated draft validation failures separately without editing those references.
 

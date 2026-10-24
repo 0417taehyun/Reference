@@ -41,7 +41,9 @@ export class BookScrollHints {
         button.addEventListener('click', event => this.scrollFurther(entry, event));
         button.addEventListener('animationend', this.finishDrawing);
         button.addEventListener('animationcancel', this.finishDrawing);
-        new ResizeObserver(() => this.update(entry)).observe(body);
+        // Content can grow without resizing the viewport, e.g. when a keyword opens its quotes.
+        const observer = new ResizeObserver(() => this.update(entry));
+        [body, ...Array.from(body.children)].forEach(element => observer.observe(element));
         return [entry];
     }
     finishDrawing(event: AnimationEvent) {

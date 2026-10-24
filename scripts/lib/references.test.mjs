@@ -5,10 +5,10 @@ import { join } from 'node:path';
 import { stringify } from 'yaml';
 import { applyTranslation, loadReference, missingTranslations, parseReference, translatedReference, validatePair, validateAnnotations } from './references.mjs';
 import { requestTranslation, translateMissing } from './translate.mjs';
-export const data = { refId: '01-example', order: 1, name: '홍길동', title: 'Manager', company: 'Example', relationship: '매니저', period: '2023 – 2025', photo: '/photos/example.svg', translated: false, keywords: ['ownership'],
+export const data = { refId: '01-example', order: 1, name: '홍길동', title: 'Manager', company: 'Example', relationship: '매니저', period: '2023 – 2025', photo: '/photos/example.svg', translated: false,
     annotations: [{ text: '끝까지 해결', type: 'circle' }, { text: '끝까지 해결', type: 'star' }] };
-export const original = { filename: '01-example.md', language: 'ko', data, body: '그는 ==문제를 끝까지 해결==합니다.\n' };
-export const translation = { name: 'Example Name', title: 'Manager', relationship: 'Direct manager', body: 'They ==own problems through resolution==.\n', annotations: [{ text: 'through resolution', type: 'circle' }, { text: 'through resolution', type: 'star' }] };
+export const original = { filename: '01-example.md', language: 'ko', data, body: '그는 ==문제를 끝까지 해결=={ownership}합니다.\n' };
+export const translation = { name: 'Example Name', title: 'Manager', relationship: 'Direct manager', body: 'They ==own problems through resolution=={ownership}.\n', annotations: [{ text: 'through resolution', type: 'circle' }, { text: 'through resolution', type: 'star' }] };
 export async function fixture() {
     const root = await mkdtemp(join(tmpdir(), 'reference-translation-'));
     await Promise.all(['ko', 'en'].map(language => mkdir(join(root, language))));
@@ -37,12 +37,13 @@ describe('reference translation integrity', () => {
         expect(() => translatedReference(original, { ...translation, annotations: [{ text: 'absent', type: 'circle' }, { text: 'absent', type: 'star' }] })).toThrow(/absent/);
         expect(() => translatedReference(original, { ...translation, annotations: [translation.annotations[0], { text: 'They', type: 'star' }] })).toThrow(/diverged/);
     });
-    it('copies keyword lists unchanged and rejects lost or reordered keywords', () => {
-        const source = { ...original, data: { ...data, keywords: ['성장', '설계'] } };
-        const target = translatedReference(source, translation);
-        expect(target.data.keywords).toEqual(['성장', '설계']);
-        expect(() => validatePair(source, { ...target, data: { ...target.data, keywords: [] } })).toThrow(/keywords/);
-        expect(() => validatePair(source, { ...target, data: { ...target.data, keywords: ['설계', '성장'] } })).toThrow(/keywords/);
+    it('keeps keyword tags on the same highlights and rejects lost, translated or reordered tags', () => {
+        const source = { ...original, body: '그는 ==문제를 끝까지 해결=={성장,설계}합니다.\n' };
+        expect(translatedReference(source, { ...translation, body: 'They ==own problems through resolution=={성장,설계}.\n' }).body).toContain('=={성장,설계}');
+        expect(() => translatedReference(source, translation)).toThrow(/keyword tags/);
+        expect(() => translatedReference(source, { ...translation, body: 'They ==own problems through resolution=={growth,design}.\n' })).toThrow(/keyword tags/);
+        expect(() => translatedReference(source, { ...translation, body: 'They ==own problems through resolution=={설계,성장}.\n' })).toThrow(/keyword tags/);
+        expect(() => translatedReference(source, { ...translation, body: 'They ==own problems through resolution==.\n' })).toThrow(/keyword tags/);
     });
     it('uses Karrot for the company and translated prose while preserving company identity', () => {
         const source = { ...original, data: { ...data, company: '당근마켓' }, body: `당근마켓에서 ${original.body}` };
@@ -59,7 +60,9 @@ describe('reference translation integrity', () => {
         expect(() => parseReference(`---\n${stringify({ ...data, refId: '../bad' })}---\nText\n`, '01-example.md')).toThrow();
         expect(() => parseReference(`---\n${stringify(data)}---\nText\n`, '02-other.md')).toThrow(/filename/);
         expect(() => validateAnnotations({ ...original, body: original.body.replace('문제를 끝까지 해결', '**문제를 끝까지 해결**') })).toThrow(/plain text/);
-        expect(() => validateAnnotations({ ...original, body: original.body.replace('==합니다', '=={ownership}합니다') })).toThrow(/keywords list/);
+        expect(() => validateAnnotations({ ...original, body: original.body.replace('{ownership}', '{own ership}') })).toThrow(/Keyword tags/);
+        expect(() => validateAnnotations({ ...original, body: original.body.replace('{ownership}', '{}') })).toThrow(/Keyword tags/);
+        expect(() => parseReference(`---\n${stringify({ ...data, keywords: ['성장'] })}---\nText\n`, '01-example.md')).toThrow(/==phrase=={keyword}/);
     });
     it('writes only a missing counterpart and leaves an existing translation untouched', async () => {
         const root = await fixture();

@@ -10,10 +10,6 @@ photo: https://media.licdn.com/dms/image/v2/D5635AQH1SK_pOUNFGw/profile-framedph
 linkedin: https://www.linkedin.com/in/seungwoo-lee-77505882
 translated: true
 originalLanguage: ko
-keywords:
-  - 협업
-  - 주도성
-  - 이해력
 annotations:
   - text: understand
     type: circle
@@ -29,10 +25,10 @@ annotations:
 
 I worked with Taehyun Lee at Karrot for about three and a half years. We were both part of the Infrastructure Division, where our collaboration centered on the reliable operation of large-scale image and video platforms. Taehyun led this work on the Common Services Team, and I supported it as a member of the SRE team.
 
-What stands out most from working with Taehyun is that ==he kept Karrot's image and video platforms running reliably around the clock for a service with more than 20 million monthly active users==. He quickly learned new technologies along the way and ==always worked carefully and thoroughly== to ensure changes could be rolled out without problems. I felt he was a colleague I could trust to work with in any domain and at any scale.
+What stands out most from working with Taehyun is that ==he kept Karrot's image and video platforms running reliably around the clock for a service with more than 20 million monthly active users==. He quickly learned new technologies along the way and ==always worked carefully and thoroughly== to ensure changes could be rolled out without problems. I felt he was ==a colleague I could trust to work with in any domain and at any scale=={협업}.
 
-I also remember how he always worked to clearly define and fully understand the goals he was given, and proactively led discussions about improvements.
+I also remember how he always worked to clearly define and fully understand the goals he was given, and ==proactively led discussions about improvements=={주도성}.
 
-Beyond his strong technical skills and sense of responsibility, I believe Taehyun's greatest strength is ==his willingness to understand his colleagues and listen to them attentively==. He always listened to others with a cheerful demeanor and worked with them to find better approaches. I believe this is why even large, complex projects could be launched quickly and improved continuously.
+Beyond his strong technical skills and sense of responsibility, I believe Taehyun's greatest strength is ==his willingness to understand his colleagues and listen to them attentively=={이해력}. He always listened to others with a cheerful demeanor and worked with them to find better approaches. I believe this is why even large, complex projects could be launched quickly and improved continuously.
 
 I respected him as a colleague and felt there was a great deal I could learn from him, both technically and personally.

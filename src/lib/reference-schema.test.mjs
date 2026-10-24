@@ -13,11 +13,9 @@ describe('reference photo sources', () => {
     });
 });
 describe('reference keywords', () => {
-    it('accepts an optional list of nonempty keyword strings', () => {
+    it('no longer accepts a frontmatter keyword list because highlights carry the tags', () => {
         const metadata = { refId: 'example', order: 1, name: 'Example', title: 'Lead', company: 'Example', relationship: 'Peer', period: '2023', photo: '/images/example.jpg' };
-        expect(referenceSchema.parse(metadata).keywords).toEqual([]);
-        expect(referenceSchema.parse({ ...metadata, keywords: [' 성장 ', '설계'] }).keywords).toEqual(['성장', '설계']);
-        expect(referenceSchema.safeParse({ ...metadata, keywords: [' '] }).success).toBe(false);
-        expect(referenceSchema.safeParse({ ...metadata, keywords: [{ text: '설계' }] }).success).toBe(false);
+        expect(referenceSchema.safeParse(metadata).success).toBe(true);
+        expect(referenceSchema.safeParse({ ...metadata, keywords: ['성장'] }).success).toBe(false);
     });
 });
