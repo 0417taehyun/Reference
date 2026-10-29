@@ -26,7 +26,9 @@ const ogImage = new URL('/og.png', siteUrl);
     <link rel="canonical" href={canonical} />
     {languages.map((languageCode) => <link rel="alternate" hreflang={languageCode} href={new URL(basePath[languageCode], siteUrl)} />)}
     <link rel="alternate" hreflang="x-default" href={new URL(basePath.en, siteUrl)} />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/favicon-512.png" />
     <meta name="color-scheme" content="light" />
     <meta name="theme-color" content="#e6dbc8" />
 
