@@ -10,11 +10,9 @@
   .body { margin: auto 0; }
   .mark { display: block; width: 50px; color: #a35d48; }
   .quote { position: relative; margin: 26px 0 0; font-size: 68px; font-weight: 600; line-height: 1.2; letter-spacing: -0.03em; }
-  .foot { display: flex; justify-content: space-between; align-items: baseline; }
-  .foot p { margin: 0; }
-  .by { font-size: 24px; color: #625647; }
+  .head { margin: 0; font-size: 15px; letter-spacing: .12em; text-transform: uppercase; color: #82725e; }
+  .by { margin: 0; font-size: 24px; color: #625647; }
   .by strong { font-weight: 600; color: #342c24; }
-  .site { font-size: 15px; letter-spacing: .12em; text-transform: uppercase; color: #82725e; }
   [data-ink-layer] { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
   [data-ink-layer] path { fill: none; stroke: #45606d; stroke-width: 3.2; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
   [data-ink-layer] [data-ink="circle"] { stroke: #a35d48; stroke-width: 3.6; }
@@ -23,17 +21,15 @@
 <body>
 <div class="spine"></div>
 <div class="page">
+  <p class="head">What people I've worked with say about me</p>
   <div class="body">
     <svg class="mark" viewBox="12 16 40.5 33" fill="currentColor" aria-hidden="true">
       <path d="M12 21C12 18.2 14.2 16 17 16H25.5C28.3 16 30.5 18.2 30.5 21V30.5C30.5 40.2 25.5 46.6 17 49L14.6 43.6C20 42 22.7 38.8 23 35.8H17C14.2 35.8 12 33.6 12 30.8Z" />
       <path d="M34 21C34 18.2 36.2 16 39 16H47.5C50.3 16 52.5 18.2 52.5 21V30.5C52.5 40.2 47.5 46.6 39 49L36.6 43.6C42 42 44.7 38.8 45 35.8H39C36.2 35.8 34 33.6 34 30.8Z" />
     </svg>
-    <p class="quote">If you have the chance to work with Taehyun, <span data-ink="underline">consider yourself <span data-ink="circle">fortunate</span>.</span><svg data-ink-layer aria-hidden="true"></svg></p>
+    <p class="quote">If you have the chance to work with Taehyun, consider yourself fortunate.<svg data-ink-layer aria-hidden="true"></svg></p>
   </div>
-  <div class="foot">
-    <p class="by"><strong>Mijeong Park (Rachel)</strong> · My team lead at Karrot</p>
-    <p class="site">Taehyun Lee · r.townof.me</p>
-  </div>
+  <p class="by"><strong>Mijeong Park (Rachel)</strong> · Lead Software Engineer, Karrot</p>
 </div>
 </body>
 </html>
