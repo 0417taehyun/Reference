@@ -5,6 +5,7 @@ import ProfilePage from './ProfilePage.astro';
 import BodyPage from './BodyPage.astro';
 import site from '../content/site.json';
 import { interfaceText, type Language } from '../i18n/ui';
+import { lastUpdated } from '../lib/last-updated.mjs';
 
 interface Props {
   language: Language;
@@ -17,12 +18,13 @@ const total = rendered.length;
 const name = site.name[language];
 const tagline = site.tagline[language];
 const intro = site.intro[language];
+const updated = lastUpdated();
 const updatedLabel = new Intl.DateTimeFormat(language === 'ko' ? 'ko-KR' : 'en-US', {
   year: 'numeric',
   month: 'long',
   day: 'numeric',
   timeZone: 'UTC',
-}).format(new Date(site.updated));
+}).format(new Date(updated));
 
 const soundCredits = [
   { label: text.pageTurnSound, title: 'Inventory Sound Effects', author: 'artisticdude', source: 'https://opengameart.org/content/inventory-sound-effects', license: 'CC BY 3.0', licenseUrl: 'https://creativecommons.org/licenses/by/3.0/', changes: text.originalSound },
@@ -153,7 +155,7 @@ const soundCredits = [
         </ul>
       </div>
       <div class="page-foot" style="color: color-mix(in oklab, var(--page) 55%, transparent);">
-        <span>{text.updated} · <time datetime={site.updated}>{updatedLabel}</time></span>
+        <span>{text.updated} · <time datetime={updated}>{updatedLabel}</time></span>
         <span>{site.links.email}</span>
       </div>
     </div>

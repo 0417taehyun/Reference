@@ -58,6 +58,8 @@ jobs:
         with:
           ref: ${{ needs.prepare.outputs.commit }}
           persist-credentials: false
+          # Full history lets the build date "Last updated" from the last commit under references/.
+          fetch-depth: 0
       - uses: withastro/action@v5
         with:
           node-version: 24
