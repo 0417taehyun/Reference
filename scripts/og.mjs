@@ -3,21 +3,24 @@ import { pathToFileURL } from 'node:url';
 import { chromium } from 'playwright-core';
 import { circlePath, underlinePath } from '../src/lib/ink-geometry.mjs';
 export const OG_SIZE = { width: 1200, height: 630 };
-// The pen geometry is tuned for the site's largest body text, so marks are measured at that size and scaled back up.
+// The circle's overshoot is tuned in pixels for the site's largest body text, so it is drawn at that size and scaled up.
+// The underline's wobble is also in pixels but should stay pen-fine, so it is drawn at full size.
 export const SITE_FONT_SIZE = 17;
-/** Runs in the page: measures each [data-ink] line box relative to the ink layer, in site-sized units. */
+export const SCALED_INK = new Set(['circle']);
+/** Runs in the page: measures each [data-ink] line box relative to the ink layer. */
 export function measureInk(siteFontSize) {
     const origin = document.querySelector('[data-ink-layer]').getBoundingClientRect();
     return [...document.querySelectorAll('[data-ink]')].flatMap((element) => {
         const scale = parseFloat(getComputedStyle(element).fontSize) / siteFontSize;
         return [...element.getClientRects()].map(rectangle => ({
-            kind: element.dataset.ink, scale, horizontal: (rectangle.left - origin.left) / scale, vertical: (rectangle.top - origin.top) / scale, width: rectangle.width / scale, height: rectangle.height / scale,
+            kind: element.dataset.ink, scale, horizontal: rectangle.left - origin.left, vertical: rectangle.top - origin.top, width: rectangle.width, height: rectangle.height,
         }));
     });
 }
 export function inkStroke(mark, index) {
     const factories = { underline: underlinePath, circle: circlePath };
-    return { kind: mark.kind, scale: mark.scale, path: factories[mark.kind](mark.horizontal, mark.vertical, mark.width, mark.height, index) };
+    const scale = SCALED_INK.has(mark.kind) ? mark.scale : 1;
+    return { kind: mark.kind, scale, path: factories[mark.kind](mark.horizontal / scale, mark.vertical / scale, mark.width / scale, mark.height / scale, index) };
 }
 /** Runs in the page: draws the strokes computed in Node with the site's pen geometry. */
 export function drawInk(strokes) {
