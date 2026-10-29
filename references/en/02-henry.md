@@ -1,6 +1,6 @@
 ---
 refId: 02-henry
-order: 2
+order: 3
 name: Heesuk Ahn (Henry)
 title: Subteam Lead, Software Engineer
 company: Karrot

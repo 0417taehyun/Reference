@@ -1,6 +1,6 @@
 ---
 refId: 02-henry
-order: 2
+order: 3
 name: "안희석 (Henry)"
 title: "파트 리더, 소프트웨어 엔지니어"
 company: "당근마켓"
