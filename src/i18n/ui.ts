@@ -37,7 +37,7 @@ export const interfaceText = {
         linkedin: 'LinkedIn',
         translatedNote: 'Translated from the original reference.',
         readOriginal: 'Read the Korean original',
-        readTranslation: 'Read the English translation',
+        readTranslation: 'Read the Korean translation',
         backTitle: 'Thank you for reading.',
         backBody: "If you'd like to speak with anyone featured in this book, I'm happy to make an introduction.",
         email: 'Email',
